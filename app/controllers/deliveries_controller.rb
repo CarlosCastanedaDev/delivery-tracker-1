@@ -1,4 +1,5 @@
 class DeliveriesController < ApplicationController
+  
   def index
     matching_deliveries = Delivery.all
 
