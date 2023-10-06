@@ -1,8 +1,9 @@
 <div>
   <div>
     <h1>
-      List of all deliveries
+      Delivery Tracker
     </h1>
+    <p>Know if something gets lost in the mail.</p>
   </div>
 </div>
 
@@ -11,7 +12,7 @@
 <div>
   <div>
     <h2>
-      Add a new delivery
+      Expecting a package?
     </h2>
 
     <form action="/insert_delivery" method="post">
@@ -20,7 +21,7 @@
           Description
         </label>
 
-        <textarea id="description_box" name="query_description" rows="3"></textarea>
+        <input type="text" id="description_box" name="query_description">
       </div>
 
       <div>
@@ -36,113 +37,82 @@
           Details
         </label>
 
-        <input type="text" id="details_box" name="query_details">
+        <textarea type="text" id="details_box" name="query_details" rows="3"></textarea>
+        <input type="hidden" name="query_user_id" value="<%= current_user.id%>">
       </div>
-
-      <div>
-        <input type="checkbox" id="arrived_box" name="query_arrived" value="1">
-
-        <label for="arrived_box">Arrived</label>
-      </div>
-
-      <div>
-        <label for="user_id_box">
-          User
-        </label>
-
-        <input type="text" id="user_id_box" name="query_user_id">
-      </div>
-
-      <button>
-        Create delivery
+</p>
+      <button type="submit">Log delivery
       </button>
     </form>
   </div>
 </div>
 
 <hr>
-<div>
-  <div>
-    <table border="1">
-      <tr>
-        <th>
-          ID
-        </th>
 
-        <th>
-          Description
-        </th>
+<div class="waiting_on" style="background-color: #FAFAD6
+">
+  <h2>Waiting on</h2>
+  <ul>
+    <% @list_of_deliveries.each do |a_delivery| %>
 
-        <th>
-          Supposed to arrive on
-        </th>
+      <li>
 
-        <th>
-          Details
-        </th>
+        <div><%= a_delivery.description %></div>
 
-        <th>
-          Arrived
-        </th>
+        <% if a_delivery.supposed_to_arrive_on < Date.current %>
 
-        <th>
-          User
-        </th>
+          <div style="color: red">Supposed to arrive on <%= a_delivery.supposed_to_arrive_on %></div>
 
-        <th>
-          Created at
-        </th>
+        <% else %>
 
-        <th>
-          Updated at
-        </th>
+          <div>Supposed to arrive on <%= a_delivery.supposed_to_arrive_on %>
 
-        <th>
-        </th>
-      </tr>
+      
 
-      <% @list_of_deliveries.each do |a_delivery| %>
-      <tr>
-        <td>
-          <%= a_delivery.id %>
-        </td>
+          </div>
+          <% end %>
 
-        <td>
-          <%= a_delivery.description %>
-        </td>
+          <div><%= a_delivery.details %></div>
 
-        <td>
-          <%= a_delivery.supposed_to_arrive_on %>
-        </td>
+          <div>
+            <form action="/modify_delivery/<%= a_delivery.id %>" method="post">
+              <input type="hidden" name="query_arrived" value="true">
+              <button type="submit">Mark as received</button>
+            </form>
+          </div>
+        <br>
+        </li>
 
-        <td>
-          <%= a_delivery.details %>
-        </td>
-
-        <td>
-          <%= a_delivery.arrived %>
-        </td>
-
-        <td>
-          <%= a_delivery.user_id %>
-        </td>
-
-        <td>
-          <%= time_ago_in_words(a_delivery.created_at) %> ago
-        </td>
-        <td>
-          <%= time_ago_in_words(a_delivery.updated_at) %> ago
-        </td>
-
-        <td>
-          <a href="/deliveries/<%= a_delivery.id %>">
-            Show details
-          </a>
-        </td>
-      </tr>
       <% end %>
-    </table>
+
+    </ul>
   </div>
+
+  <hr>
+
+  <div class="received" style="background-color: #A6EC99"
+
+>
+    <h2>Received</h2>
+    <ul>
+  <% @list_of_deliveries_received.each do |a_delivery| %>
+
+    <li>
+
+      <div><%= a_delivery.description %></div>
+
+      <div>
+        <small>
+          <%= time_ago_in_words(a_delivery.updated_at) %> ago
+          <a href="/delete_delivery/<%= a_delivery.id %>">Delete</a>
+          </small>
 </div>
 
-<hr>
+    </li>
+
+  <% end %>
+
+</ul>
+
+  </div>
+ 
